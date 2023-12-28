@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+
+    app:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        user: root
+        image: todolist
+        container_name: todolist-app
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks:
+            - todolistnet
+
+    db:
+        image: mariadb:latest
+        container_name: todolist-db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - todolistnet
+
+    nginx:
+        image: nginx:1.17-alpine
+        container_name: todolist-nginx
+        restart: unless-stopped
+        ports:
+            - 8000:80
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d
+        networks:
+            - todolistnet
+
+networks:
+    todolistnet:
+        driver: bridge
+

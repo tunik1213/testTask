@@ -1,0 +1,241 @@
+openapi: 3.0.0
+info:
+  title: Task Management API
+  description: API for managing tasks
+  version: 1.0.0
+
+paths:
+  /api/registerUser:
+    post:
+      summary: register a new user and get api token
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - name
+                - email
+                - password
+      responses:
+        201:
+          description: Successful registration
+          content:
+            application/json:
+              example:
+                api_token: 1|1pdyCbE3H08OmC02aXgNAc3CLAekc8OvOiPgYrWCfa2e558d
+
+  /api/tasks:
+    get:
+      summary: Get all tasks
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      enum: [todo, done]
+                      description: Filter tasks by status
+                    priority:
+                      type: integer
+                      description: Filter tasks by priority
+                    search:
+                      type: string
+                      description: Performs a fulltext search by title and description
+                order:
+                  type: object
+                  properties:
+                    created_at:
+                      type: string
+                      enum: [asc, desc]
+                      description: Order tasks by creation date (ascending or descending)
+                    completed_at:
+                      type: string
+                      enum: [ asc, desc ]
+                      description: Order tasks by completion date (ascending or descending)
+                    priority:
+                      type: string
+                      enum: [asc, desc]
+                      description: Order tasks by priority (ascending or descending)
+              example:
+                filters:
+                  status: "done"
+                  priority: 1
+                  search: "Task search keywords"
+                order:
+                  created_at: "desc"
+                  priority: "asc"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                tasks:
+                  - id: 1
+                    created_at: 2023-12-19T09:41:07.000000Z
+                    title: Task 1
+                    creator_id: 11
+                    parent_id: null
+                    status: todo
+                    priority: 4
+                    description: Description for Task 1
+                    completed_at: null
+                  - id: 2
+                    title: Task 2
+                    creator_id: 5
+                    parent_id: 1
+                    status: done
+                    priority: 1
+                    description: Description for Task 2
+                    completed_at: 2023-12-19T10:23:15.000000Z
+      security:
+        - bearerAuth: []
+
+    post:
+      summary: Create a new task
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                priority:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                parent_id:
+                  type: integer
+              required:
+                - name
+                - priority
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              example:
+                id: 3
+                title: New Task
+                description: Description for the new task
+                creator_id: 5
+                parent_id: 1
+                status: done
+                priority: 1
+                created_at: 2023-12-19T09:41:07.000000Z
+                completed_at: null
+      security:
+        - bearerAuth: []
+
+  /api/tasks/{taskId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ID of the task
+        schema:
+          type: integer
+    put:
+      summary: Update a task by ID
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                priority:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                parent_id:
+                  type: integer
+      responses:
+        '202':
+          description: Task updated successfully
+          content:
+            application/json:
+              example:
+                id: 3
+                title: Updated Task
+                description: Updated description for the task
+                creator_id: 5
+                parent_id: 1
+                status: done
+                priority: 1
+                created_at: 2023-12-19T09:41:07.000000Z
+                completed_at: null
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete a task by ID
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Task deleted successfully
+      security:
+        - bearerAuth: []
+  /api/tasks/markDone/{taskId}:
+    post:
+      summary: Mark task as done
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The task has been marked as done
+          content:
+            application/json:
+              example:
+                id: 3
+                title: Updated Task
+                description: Updated description for the task
+                creator_id: 5
+                parent_id: 1
+                status: done
+                priority: 1
+                created_at: 2023-12-19T09:41:07.000000Z
+                completed_at: 2023-12-19T10:15:44.000000Z
+      security:
+        - bearerAuth: []
