@@ -15,13 +15,6 @@ class TestController extends Controller
 {
     public function index(Request $request)
     {
-        $t = Task::find(123);
-
-
-
-        dd($t->canDelete());
-
-
         echo('it works!');
     }
 }
