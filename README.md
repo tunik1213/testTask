@@ -6,40 +6,47 @@ It is a simple HTTP service designed for managing tasks. This API allows users t
 
 ## Running project with docker
 1. Clone the repository:
-```bash
-$ git clone https://github.com/tunik1213/testTask
+```
+git clone https://github.com/tunik1213/testTask
 ```
 2. Set up environment and proper permissions
-```bash
-$ cd testTask/
-$ cp .env.docker .env
-$ chmod -R 777 storage
+```
+cd testTask/
+```
+```
+cp .env.docker .env
+```
+```
+chmod -R 777 storage
 ```
 3. Build up a docker container
-```bash
+```
 $ docker-compose up -d --build
 ```
 4. Install dependencies
-```bash
-$ docker-compose exec app composer install
+```
+docker-compose exec app composer install
 ```
 5. Run migrations and seeding
-```bash
-$ docker-compose exec app php artisan migrate --seed
 ```
-Now the Http service should be avaliable on your server on port 8000. You can check whether it works quering 
+docker-compose exec app php artisan migrate --seed
+```
+Now the HTTP service should be avaliable on your server on port 8000. You can check whether it works quering 
 ```
 http://<your-server>:8000/test
 ```
 
 
-
-
-
 ## Usage
 
-First things first, you need to register a new user in order to get your access token. You can do it by querying 
+#### 1. Register a New User:
+
+Before using the Task Management API, you need to register a new user to obtain an access token. This can be done by querying
 ```
 /api/registerUser
 ```
-Then you can call any of the available /api/tasks methods using that token for the Bearer authentication
+The response will contain the access token.
+
+#### 2. Accessing Task Management API:
+
+Use the obtained access token for Bearer authentication querying any of the avaliable /api/tasks methods according to [specification](OpenAPI.yaml)
